@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "Juanny Jesus",
+    Name = "fuck you blackhub <3",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "JuannyJesusConfig"
@@ -13,21 +13,28 @@ local Tab = Window:MakeTab({
     PremiumOnly = false
 })
 
+local MiscTab = Window:MakeTab({
+    Name = "Misc",
+    Icon = "rbxassetid://6031071050", -- generic gear icon
+    PremiumOnly = false
+})
+
 local locations = {
-    CRAFTING = Vector3.new(-3160.14111328125, -745.4639892578125, 1682.5947265625),
-    Valentine = Vector3.new(20673.3359375, 205.01898193359375, -17976.5703125)
+    craft = Vector3.new(-3160.14111328125, -745.4639892578125, 1682.5947265625),
+    ValentineTopSeats = Vector3.new(20673.3359375, 205.01898193359375, -17976.5703125)
 }
 
-local selectedLocation = "CRAFTING"
+local selectedLocation = "craft"
 
 Tab:AddDropdown({
     Name = "Teleport Locations",
-    Default = "CRAFTING",
-    Options = {"CRAFTING", "Valentine"},
+    Default = "craft",
+    Options = {"craft", "ValentineTopSeats"},
     Callback = function(Value)
         selectedLocation = Value
     end
 })
+
 
 Tab:AddButton({
     Name = "Teleport",
@@ -36,6 +43,28 @@ Tab:AddButton({
         local character = player.Character or player.CharacterAdded:Wait()
         local rootPart = character:WaitForChild("HumanoidRootPart")
         rootPart.Position = locations[selectedLocation]
+    end
+})
+
+MiscTab:AddButton({
+    Name = "Open Black Market",
+    Callback = function()
+        local BlackMarket = game.Players.LocalPlayer.PlayerGui:FindFirstChild("hud")
+        if BlackMarket then
+            BlackMarket = BlackMarket:FindFirstChild("safezone")
+            if BlackMarket then
+                BlackMarket = BlackMarket:FindFirstChild("BlackMarket")
+                if BlackMarket then
+                    BlackMarket.Visible = true
+                else
+                    warn("BlackMarket UI not found!")
+                end
+            else
+                warn("safezone UI not found!")
+            end
+        else
+            warn("hud UI not found!")
+        end
     end
 })
 
