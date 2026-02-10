@@ -153,18 +153,23 @@
         end
     })
 
+
     Tab:AddDropdown({
         Name = "tp toe playa",
-        Default = nil,
+        Default = "None",
         Options = (function()
-            local playerNames = {}
+            local playerNames = {"None"}
             for _, player in ipairs(game.Players:GetPlayers()) do
                 table.insert(playerNames, player.Name)
             end
             return playerNames
         end)(),
         Callback = function(Value)
-            selectedPlayer = Value
+            if Value == "None" then
+                selectedPlayer = nil
+            else
+                selectedPlayer = Value
+            end
         end
     })
 
