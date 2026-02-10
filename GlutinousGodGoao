@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "1% tryhard rod is insane @eagleshitter!!!!",
+    Name = "Juanny Jesus",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "JuannyJesusConfig"
@@ -124,6 +124,38 @@ MiscTab:AddButton({
     end
 })
 
+    local fullbrightEnabled = false
+    local function setFullbright(state)
+        local Lighting = game:GetService("Lighting")
+        if state then
+            Lighting.Brightness = 5
+            Lighting.Ambient = Color3.new(1, 1, 1)
+            Lighting.FogEnd = 100000
+            Lighting.FogStart = 0
+            Lighting.FogColor = Color3.new(1, 1, 1)
+        else
+            Lighting.Brightness = 1
+            Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
+            Lighting.FogEnd = 1000
+            Lighting.FogStart = 0
+            Lighting.FogColor = Color3.new(0.5, 0.5, 0.5)
+        end
+    end
+
+    MiscTab:AddButton({
+        Name = "Toggle Fullbright / No Fog",
+        Callback = function()
+            fullbrightEnabled = not fullbrightEnabled
+            setFullbright(fullbrightEnabled)
+        end
+    })
+
+    game.Players.LocalPlayer.CharacterAdded:Connect(function()
+        if fullbrightEnabled then
+            setFullbright(true)
+        end
+    end)
+
 OrionLib:Init()
 
 spawn(function()
@@ -137,4 +169,3 @@ spawn(function()
         end
     end
 end)
-
