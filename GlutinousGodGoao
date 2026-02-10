@@ -141,7 +141,7 @@
         ["Moosewood"] = Vector3.new(387.9800109863281, 134.56405639648438, 244.09219360351562)
     }
 
-    local selectedLocation = "CRAFTING"
+    local selectedLocation = "Crafting"
     local selectedPlayer = nil
 
     Tab:AddDropdown({
@@ -184,36 +184,42 @@
                 local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
                 if targetPlayer then
                     local targetCharacter = targetPlayer.Character or targetPlayer.CharacterAdded:Wait()
-                    local targetRootPart = nil
-                    local timeout = 5
+                    local timeout = 10
                     local start = tick()
+                    local foundPart = nil
                     repeat
-                        targetRootPart = targetCharacter:FindFirstChild("HumanoidRootPart")
-                        if not targetRootPart then
+                        foundPart = targetCharacter:FindFirstChild("HumanoidRootPart")
+                        if not foundPart then
+                            foundPart = targetCharacter:FindFirstChild("Torso")
+                        end
+                        if not foundPart then
+                            foundPart = targetCharacter:FindFirstChild("Head")
+                        end
+                        if not foundPart then
                             task.wait(0.1)
                         end
-                    until targetRootPart or tick() - start > timeout
-                    if targetRootPart then
-                            rootPart.CFrame = targetRootPart.CFrame
+                    until foundPart or tick() - start > timeout
+                    if foundPart then
+                        -- Teleport a few studs above the target part to help bypass region restrictions
+                        local offset = Vector3.new(0, 5, 0)
+                        rootPart.CFrame = foundPart.CFrame + offset
+                        if foundPart.Name ~= "HumanoidRootPart" then
+                            warn("HumanoidRootPart not found, teleported to fallback part: " .. foundPart.Name)
+                        end
                     else
-                            
-                            local fallbackPart = targetCharacter:FindFirstChild("Torso") or targetCharacter:FindFirstChild("Head")
-                            if fallbackPart then
-                                task.wait(0.1)
-                                rootPart.CFrame = targetRootPart.CFrame
-                                rootPart.CFrame = fallbackPart.CFrame
-                                warn("HumanoidRootPart not found, teleported to fallback part: " .. fallbackPart.Name)
-                            else
-                                warn("Target player has no HumanoidRootPart, Torso, or Head after waiting!")
-                                    task.wait(0.1)
-                            end
+                        warn("Target player has no HumanoidRootPart, Torso, or Head after waiting!")
                     end
                 else
                     warn("Target player not found!")
                 end
             else
-                rootPart.CFrame = CFrame.new(locations[selectedLocation])
-                task.wait(0.1)
+                local targetPos = locations[selectedLocation]
+                if targetPos then
+                    rootPart.CFrame = CFrame.new(targetPos)
+                    task.wait(0.1)
+                else
+                    warn("Selected location not found in locations table: " .. tostring(selectedLocation))
+                end
             end
         end
     })
