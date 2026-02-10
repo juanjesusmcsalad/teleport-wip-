@@ -1,5 +1,4 @@
-    -- DEBUG: Only print relevant ValueBase/attribute changes for rod/tool
-    local infiniteJumpEnabled = false
+ local infiniteJumpEnabled = false
     local infiniteJumpConnection
     local function setInfiniteJump(state)
         infiniteJumpEnabled = state
@@ -138,7 +137,7 @@
         ["Sunken Reliquary"] = Vector3.new(2963.45703125, -1101.61083984375, -100.96979522705078),
         ["Treasure Island"] = Vector3.new(8194.8330078125, 230.50404357910156, -17177.048828125),
         ["mein shaft"] = Vector3.new(-706.5381469726562, -864.7501831054688, -102.08809661865234),
-        ["EagleHITLER afk spot"] = Vector3.new(-1969.658935546875, 179.63108825683594, 241.9157257080078),
+        ["Eaglehitter afk spot"] = Vector3.new(-1969.658935546875, 179.63108825683594, 241.9157257080078),
         ["Moosewood"] = Vector3.new(387.9800109863281, 134.56405639648438, 244.09219360351562)
     }
 
@@ -148,23 +147,26 @@
     Tab:AddDropdown({
         Name = "Teleport Locations",
         Default = "Crafting",
-        Options = {"Crafting", "Valentine Top Seats", "Valentine Main", "Bethany afk spot coral bastion", "Sunken Reliquary", "Treasure Island", "mein shaft", "EagleHITLER afk spot", "Moosewood"},
+        Options = {"Crafting", "Valentine Top Seats", "Valentine Main", "Bethany afk spot coral bastion", "Sunken Reliquary", "Treasure Island", "mein shaft", "Eaglehitter afk spot", "Moosewood"},
         Callback = function(Value)
             selectedLocation = Value
         end
     })
 
 
-    Tab:AddDropdown({
+    local playerDropdown
+    local function getPlayerNames()
+        local playerNames = {"None"}
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            table.insert(playerNames, player.Name)
+        end
+        return playerNames
+    end
+
+    playerDropdown = Tab:AddDropdown({
         Name = "tp toe playa",
         Default = "None",
-        Options = (function()
-            local playerNames = {"None"}
-            for _, player in ipairs(game.Players:GetPlayers()) do
-                table.insert(playerNames, player.Name)
-            end
-            return playerNames
-        end)(),
+        Options = getPlayerNames(),
         Callback = function(Value)
             if Value == "None" then
                 selectedPlayer = nil
@@ -173,6 +175,15 @@
             end
         end
     })
+
+    -- Refresh the player dropdown when players join or leave
+    local function refreshPlayerDropdown()
+        if playerDropdown and playerDropdown.SetOptions then
+            playerDropdown:SetOptions(getPlayerNames())
+        end
+    end
+    game.Players.PlayerAdded:Connect(refreshPlayerDropdown)
+    game.Players.PlayerRemoving:Connect(refreshPlayerDropdown)
 
 
     Tab:AddButton({
