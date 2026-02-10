@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "fuck you blackhub <3",
+    Name = "Juanny Jesus",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "JuannyJesusConfig"
@@ -15,23 +15,45 @@ local Tab = Window:MakeTab({
 
 local MiscTab = Window:MakeTab({
     Name = "Misc",
-    Icon = "rbxassetid://6031071050", -- generic gear icon
+    Icon = "rbxassetid://6031071050",
     PremiumOnly = false
 })
 
 local locations = {
-    craft = Vector3.new(-3160.14111328125, -745.4639892578125, 1682.5947265625),
-    ValentineTopSeats = Vector3.new(20673.3359375, 205.01898193359375, -17976.5703125)
+    ["Crafting"] = Vector3.new(-3160.14111328125, -745.4639892578125, 1682.5947265625),
+    ["Valentine Top Seats"] = Vector3.new(20673.3359375, 205.01898193359375, -17976.5703125),
+    ["Valentine Main"] = Vector3.new(20650.78515625, 142.37225341796875, -17704.037109375),
+    ["Bethany afk spot coral bastion"] = Vector3.new(2552.695068359375, -1098.1519775390625, 853.6187133789062),
+    ["Sunken Reliquary"] = Vector3.new(2963.45703125, -1101.61083984375, -100.96979522705078),
+    ["Treasure Island"] = Vector3.new(8194.8330078125, 230.50404357910156, -17177.048828125),
+    ["mein shaft"] = Vector3.new(-706.5381469726562, -864.7501831054688, -102.08809661865234),
+    ["Eaglehitter afk spot"] = Vector3.new(-1969.658935546875, 179.63108825683594, 241.9157257080078)
 }
 
-local selectedLocation = "craft"
+local selectedLocation = "CRAFTING"
+local selectedPlayer = nil
 
 Tab:AddDropdown({
     Name = "Teleport Locations",
-    Default = "craft",
-    Options = {"craft", "ValentineTopSeats"},
+    Default = "Crafting",
+    Options = {"Crafting", "Valentine Top Seats", "Valentine Main", "Bethany afk spot coral bastion", "Sunken Reliquary", "Treasure Island", "mein shaft", "Eaglehitter afk spot"},
     Callback = function(Value)
         selectedLocation = Value
+    end
+})
+
+Tab:AddDropdown({
+    Name = "tp toe playa",
+    Default = nil,
+    Options = (function()
+        local playerNames = {}
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            table.insert(playerNames, player.Name)
+        end
+        return playerNames
+    end)(),
+    Callback = function(Value)
+        selectedPlayer = Value
     end
 })
 
@@ -42,7 +64,41 @@ Tab:AddButton({
         local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
         local rootPart = character:WaitForChild("HumanoidRootPart")
-        rootPart.Position = locations[selectedLocation]
+        if selectedPlayer then
+            local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
+            if targetPlayer then
+                local targetCharacter = targetPlayer.Character or targetPlayer.CharacterAdded:Wait()
+                local targetRootPart = nil
+                local timeout = 5
+                local start = tick()
+                repeat
+                    targetRootPart = targetCharacter:FindFirstChild("HumanoidRootPart")
+                    if not targetRootPart then
+                        task.wait(0.1)
+                    end
+                until targetRootPart or tick() - start > timeout
+                if targetRootPart then
+                        rootPart.CFrame = targetRootPart.CFrame
+                else
+                        
+                        local fallbackPart = targetCharacter:FindFirstChild("Torso") or targetCharacter:FindFirstChild("Head")
+                        if fallbackPart then
+                            task.wait(0.1)
+                            rootPart.CFrame = targetRootPart.CFrame
+                            rootPart.CFrame = fallbackPart.CFrame
+                            warn("HumanoidRootPart not found, teleported to fallback part: " .. fallbackPart.Name)
+                        else
+                            warn("Target player has no HumanoidRootPart, Torso, or Head after waiting!")
+                                task.wait(0.1)
+                        end
+                end
+            else
+                warn("Target player not found!")
+            end
+        else
+            rootPart.CFrame = CFrame.new(locations[selectedLocation])
+            task.wait(0.1)
+        end
     end
 })
 
@@ -70,9 +126,8 @@ MiscTab:AddButton({
 
 OrionLib:Init()
 
--- Attempt to make Orion window draggable
 spawn(function()
-    task.wait(1) -- Wait for Orion to load
+    task.wait(1)
     local gui = game.CoreGui:FindFirstChild("Orion")
     if gui then
         local main = gui:FindFirstChildWhichIsA("Frame", true)
