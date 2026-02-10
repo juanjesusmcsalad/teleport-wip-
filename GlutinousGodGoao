@@ -1,331 +1,338 @@
-local infiniteJumpEnabled = false
-local infiniteJumpConnection
-local function setInfiniteJump(state)
-    infiniteJumpEnabled = state
-    if state then
-        if infiniteJumpConnection then infiniteJumpConnection:Disconnect() end
-        infiniteJumpConnection = game:GetService("UserInputService").JumpRequest:Connect(function()
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
-            end
-        end)
-    else
-        if infiniteJumpConnection then infiniteJumpConnection:Disconnect() end
-    end
-end
-local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
-
-local Window = OrionLib:MakeWindow({
-    Name = "Juanny Jesus",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "JuannyJesusConfig"
-})
-
-local Tab = Window:MakeTab({
-    Name = "Teleports",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local MiscTab = Window:MakeTab({
-    Name = "Misc",
-    Icon = "rbxassetid://6031071050",
-    PremiumOnly = false
-})
-
-MiscTab:AddButton({
-    Name = "Toggle Infinite Jump",
-    Callback = function()
-        setInfiniteJump(not infiniteJumpEnabled)
-    end
-})
-
-local walkspeedEnabled = false
-local walkspeedValue = 16
-local walkspeedDefault = 16
-
-local walkspeedLoop = nil
-local function enforceWalkspeed()
-    if walkspeedLoop then
-        walkspeedLoop:Disconnect()
-    end
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = walkspeedValue
-            if walkspeedEnabled then
-                walkspeedLoop = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                    if walkspeedEnabled and humanoid.WalkSpeed ~= walkspeedValue then
-                        humanoid.WalkSpeed = walkspeedValue
+    local infiniteJumpEnabled = false
+    local infiniteJumpConnection
+    local function setInfiniteJump(state)
+        infiniteJumpEnabled = state
+        if state then
+            if infiniteJumpConnection then infiniteJumpConnection:Disconnect() end
+            infiniteJumpConnection = game:GetService("UserInputService").JumpRequest:Connect(function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if character then
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    if humanoid then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
                     end
-                end)
-                humanoid.StateChanged:Connect(function(_, newState)
-                    if walkspeedEnabled and humanoid.WalkSpeed ~= walkspeedValue then
-                        humanoid.WalkSpeed = walkspeedValue
-                    end
-                end)
-            end
-        end
-    end
-end
-
-MiscTab:AddTextbox({
-    Name = "Set Walkspeed",
-    Default = "16",
-    TextDisappear = false,
-    Callback = function(Value)
-        local num = tonumber(Value)
-        if num and num > 0 then
-            walkspeedValue = num
-        else
-            walkspeedValue = walkspeedDefault
-        end
-        if walkspeedEnabled then
-            enforceWalkspeed()
-        end
-    end
-})
-
-MiscTab:AddButton({
-    Name = "Toggle Walkspeed",
-    Callback = function()
-        walkspeedEnabled = not walkspeedEnabled
-        if walkspeedEnabled then
-            enforceWalkspeed()
-        else
-            if walkspeedLoop then
-                walkspeedLoop:Disconnect()
-                walkspeedLoop = nil
-            end
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            if character then
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid.WalkSpeed = walkspeedDefault
                 end
-            end
+            end)
+        else
+            if infiniteJumpConnection then infiniteJumpConnection:Disconnect() end
         end
     end
-})
+    local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
 
-game.Players.LocalPlayer.CharacterAdded:Connect(function()
-    if walkspeedEnabled then
-        enforceWalkspeed()
-    end
-end)
+    local Window = OrionLib:MakeWindow({
+        Name = "1% tryhard rod is insane work @aegleshitter!!!!!!!!!!!",
+        HidePremium = false,
+        SaveConfig = true,
+        ConfigFolder = "JuannyJesusConfig"
+    })
 
-local locations = {
-    ["Crafting"] = Vector3.new(-3160.14111328125, -745.4639892578125, 1682.5947265625),
-    ["Valentine Top Seats"] = Vector3.new(20673.3359375, 205.01898193359375, -17976.5703125),
-    ["Valentine Main"] = Vector3.new(20650.78515625, 142.37225341796875, -17704.037109375),
-    ["Bethany afk spot coral bastion"] = Vector3.new(2552.695068359375, -1098.1519775390625, 853.6187133789062),
-    ["Sunken Reliquary"] = Vector3.new(2963.45703125, -1101.61083984375, -100.96979522705078),
-    ["Treasure Island"] = Vector3.new(8194.8330078125, 230.50404357910156, -17177.048828125),
-    ["mein shaft"] = Vector3.new(-706.5381469726562, -864.7501831054688, -102.08809661865234),
-    ["Eaglehitter afk spot"] = Vector3.new(-1969.658935546875, 179.63108825683594, 241.9157257080078)
-}
+    local Tab = Window:MakeTab({
+        Name = "Teleports",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
 
-local selectedLocation = "CRAFTING"
-local selectedPlayer = nil
+    local MainTab = Window:MakeTab({
+        Name = "Main",
+        Icon = "rbxassetid://6031280882",
+        PremiumOnly = false
+    })
 
-Tab:AddDropdown({
-    Name = "Teleport Locations",
-    Default = "Crafting",
-    Options = {"Crafting", "Valentine Top Seats", "Valentine Main", "Bethany afk spot coral bastion", "Sunken Reliquary", "Treasure Island", "mein shaft", "Eaglehitter afk spot"},
-    Callback = function(Value)
-        selectedLocation = Value
-    end
-})
+    local MiscTab = Window:MakeTab({
+        Name = "Misc",
+        Icon = "rbxassetid://6031071050",
+        PremiumOnly = false
+    })
 
-Tab:AddDropdown({
-    Name = "tp toe playa",
-    Default = nil,
-    Options = (function()
-        local playerNames = {}
-        for _, player in ipairs(game.Players:GetPlayers()) do
-            table.insert(playerNames, player.Name)
+    MiscTab:AddButton({
+        Name = "Toggle Infinite Jump",
+        Callback = function()
+            setInfiniteJump(not infiniteJumpEnabled)
         end
-        return playerNames
-    end)(),
-    Callback = function(Value)
-        selectedPlayer = Value
-    end
-})
+    })
 
+    local walkspeedEnabled = false
+    local walkspeedValue = 16
+    local walkspeedDefault = 16
 
-Tab:AddButton({
-    Name = "Teleport",
-    Callback = function()
+    local walkspeedLoop = nil
+    local function enforceWalkspeed()
+        if walkspeedLoop then
+            walkspeedLoop:Disconnect()
+        end
         local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local rootPart = character:WaitForChild("HumanoidRootPart")
-        if selectedPlayer then
-            local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
-            if targetPlayer then
-                local targetCharacter = targetPlayer.Character or targetPlayer.CharacterAdded:Wait()
-                local targetRootPart = nil
-                local timeout = 5
-                local start = tick()
-                repeat
-                    targetRootPart = targetCharacter:FindFirstChild("HumanoidRootPart")
-                    if not targetRootPart then
-                        task.wait(0.1)
-                    end
-                until targetRootPart or tick() - start > timeout
-                if targetRootPart then
-                        rootPart.CFrame = targetRootPart.CFrame
-                else
-                        
-                        local fallbackPart = targetCharacter:FindFirstChild("Torso") or targetCharacter:FindFirstChild("Head")
-                        if fallbackPart then
-                            task.wait(0.1)
-                            rootPart.CFrame = targetRootPart.CFrame
-                            rootPart.CFrame = fallbackPart.CFrame
-                            warn("HumanoidRootPart not found, teleported to fallback part: " .. fallbackPart.Name)
-                        else
-                            warn("Target player has no HumanoidRootPart, Torso, or Head after waiting!")
-                                task.wait(0.1)
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = walkspeedValue
+                if walkspeedEnabled then
+                    walkspeedLoop = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+                        if walkspeedEnabled and humanoid.WalkSpeed ~= walkspeedValue then
+                            humanoid.WalkSpeed = walkspeedValue
                         end
+                    end)
+                    humanoid.StateChanged:Connect(function(_, newState)
+                        if walkspeedEnabled and humanoid.WalkSpeed ~= walkspeedValue then
+                            humanoid.WalkSpeed = walkspeedValue
+                        end
+                    end)
                 end
-            else
-                warn("Target player not found!")
             end
-        else
-            rootPart.CFrame = CFrame.new(locations[selectedLocation])
-            task.wait(0.1)
         end
     end
-})
 
-MiscTab:AddButton({
-    Name = "Open Black Market",
-    Callback = function()
-        local BlackMarket = game.Players.LocalPlayer.PlayerGui:FindFirstChild("hud")
-        if BlackMarket then
-            BlackMarket = BlackMarket:FindFirstChild("safezone")
-            if BlackMarket then
-                BlackMarket = BlackMarket:FindFirstChild("BlackMarket")
-                if BlackMarket then
-                    BlackMarket.Visible = true
+    MiscTab:AddTextbox({
+        Name = "Set Walkspeed",
+        Default = "16",
+        TextDisappear = false,
+        Callback = function(Value)
+            local num = tonumber(Value)
+            if num and num > 0 then
+                walkspeedValue = num
+            else
+                walkspeedValue = walkspeedDefault
+            end
+            if walkspeedEnabled then
+                enforceWalkspeed()
+            end
+        end
+    })
+
+    MiscTab:AddButton({
+        Name = "Toggle Walkspeed",
+        Callback = function()
+            walkspeedEnabled = not walkspeedEnabled
+            if walkspeedEnabled then
+                enforceWalkspeed()
+            else
+                if walkspeedLoop then
+                    walkspeedLoop:Disconnect()
+                    walkspeedLoop = nil
+                end
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if character then
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    if humanoid then
+                        humanoid.WalkSpeed = walkspeedDefault
+                    end
+                end
+            end
+        end
+    })
+
+    game.Players.LocalPlayer.CharacterAdded:Connect(function()
+        if walkspeedEnabled then
+            enforceWalkspeed()
+        end
+    end)
+
+    local locations = {
+        ["Crafting"] = Vector3.new(-3160.14111328125, -745.4639892578125, 1682.5947265625),
+        ["Valentine Top Seats"] = Vector3.new(20673.3359375, 205.01898193359375, -17976.5703125),
+        ["Valentine Main"] = Vector3.new(20650.78515625, 142.37225341796875, -17704.037109375),
+        ["Bethany afk spot coral bastion"] = Vector3.new(2552.695068359375, -1098.1519775390625, 853.6187133789062),
+        ["Sunken Reliquary"] = Vector3.new(2963.45703125, -1101.61083984375, -100.96979522705078),
+        ["Treasure Island"] = Vector3.new(8194.8330078125, 230.50404357910156, -17177.048828125),
+        ["mein shaft"] = Vector3.new(-706.5381469726562, -864.7501831054688, -102.08809661865234),
+        ["Eaglehitter afk spot"] = Vector3.new(-1969.658935546875, 179.63108825683594, 241.9157257080078),
+        ["Moosewood"] = Vector3.new(387.9800109863281, 134.56405639648438, 244.09219360351562)
+    }
+
+    local selectedLocation = "CRAFTING"
+    local selectedPlayer = nil
+
+    Tab:AddDropdown({
+        Name = "Teleport Locations",
+        Default = "Crafting",
+        Options = {"Crafting", "Valentine Top Seats", "Valentine Main", "Bethany afk spot coral bastion", "Sunken Reliquary", "Treasure Island", "mein shaft", "Eaglehitter afk spot", "Moosewood"},
+        Callback = function(Value)
+            selectedLocation = Value
+        end
+    })
+
+    Tab:AddDropdown({
+        Name = "tp toe playa",
+        Default = nil,
+        Options = (function()
+            local playerNames = {}
+            for _, player in ipairs(game.Players:GetPlayers()) do
+                table.insert(playerNames, player.Name)
+            end
+            return playerNames
+        end)(),
+        Callback = function(Value)
+            selectedPlayer = Value
+        end
+    })
+
+
+    Tab:AddButton({
+        Name = "Teleport",
+        Callback = function()
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local rootPart = character:WaitForChild("HumanoidRootPart")
+            if selectedPlayer then
+                local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
+                if targetPlayer then
+                    local targetCharacter = targetPlayer.Character or targetPlayer.CharacterAdded:Wait()
+                    local targetRootPart = nil
+                    local timeout = 5
+                    local start = tick()
+                    repeat
+                        targetRootPart = targetCharacter:FindFirstChild("HumanoidRootPart")
+                        if not targetRootPart then
+                            task.wait(0.1)
+                        end
+                    until targetRootPart or tick() - start > timeout
+                    if targetRootPart then
+                            rootPart.CFrame = targetRootPart.CFrame
+                    else
+                            
+                            local fallbackPart = targetCharacter:FindFirstChild("Torso") or targetCharacter:FindFirstChild("Head")
+                            if fallbackPart then
+                                task.wait(0.1)
+                                rootPart.CFrame = targetRootPart.CFrame
+                                rootPart.CFrame = fallbackPart.CFrame
+                                warn("HumanoidRootPart not found, teleported to fallback part: " .. fallbackPart.Name)
+                            else
+                                warn("Target player has no HumanoidRootPart, Torso, or Head after waiting!")
+                                    task.wait(0.1)
+                            end
+                    end
                 else
-                    warn("BlackMarket UI not found!")
+                    warn("Target player not found!")
                 end
             else
-                warn("safezone UI not found!")
+                rootPart.CFrame = CFrame.new(locations[selectedLocation])
+                task.wait(0.1)
             end
-        else
-            warn("hud UI not found!")
         end
-    end
-})
+    })
 
-local oxygenCheatEnabled = false
-local function applyOxygenCheat()
-    workspace:SetAttribute("IgnoreOxygen", true)
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if character then
-        character:SetAttribute("OxygenUnits", 2000)
-        character:SetAttribute("Refill", true)
-        character:SetAttribute("DefOxygen1", true)
-        character:SetAttribute("DefOxygen2", true)
-        character:SetAttribute("DefOxygen3", true)
-        character:SetAttribute("DefOxygen4", true)
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            if humanoid:FindFirstChild("Oxygen") then
-                humanoid.Oxygen.Value = 100
-            end
-            if humanoid:GetAttribute("Oxygen") then
-                humanoid:SetAttribute("Oxygen", 100)
+    MiscTab:AddButton({
+        Name = "Open Black Market",
+        Callback = function()
+            local BlackMarket = game.Players.LocalPlayer.PlayerGui:FindFirstChild("hud")
+            if BlackMarket then
+                BlackMarket = BlackMarket:FindFirstChild("safezone")
+                if BlackMarket then
+                    BlackMarket = BlackMarket:FindFirstChild("BlackMarket")
+                    if BlackMarket then
+                        BlackMarket.Visible = true
+                    else
+                        warn("BlackMarket UI not found!")
+                    end
+                else
+                    warn("safezone UI not found!")
+                end
+            else
+                warn("hud UI not found!")
             end
         end
-        for _, s in ipairs(character:GetDescendants()) do
+    })
+
+    local oxygenCheatEnabled = false
+    local function applyOxygenCheat()
+        workspace:SetAttribute("IgnoreOxygen", true)
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        if character then
+            character:SetAttribute("OxygenUnits", 2000)
+            character:SetAttribute("Refill", true)
+            character:SetAttribute("DefOxygen1", true)
+            character:SetAttribute("DefOxygen2", true)
+            character:SetAttribute("DefOxygen3", true)
+            character:SetAttribute("DefOxygen4", true)
+            local humanoid = character:FindFirstChild("Humanoid")
+            if humanoid then
+                if humanoid:FindFirstChild("Oxygen") then
+                    humanoid.Oxygen.Value = 100
+                end
+                if humanoid:GetAttribute("Oxygen") then
+                    humanoid:SetAttribute("Oxygen", 100)
+                end
+            end
+            for _, s in ipairs(character:GetDescendants()) do
+                if s:IsA("LocalScript") and (s.Name:lower():find("oxygen") or s.Name:lower():find("drown")) then
+                    s.Disabled = true
+                end
+            end
+        end
+        for _, s in ipairs(workspace:GetDescendants()) do
             if s:IsA("LocalScript") and (s.Name:lower():find("oxygen") or s.Name:lower():find("drown")) then
                 s.Disabled = true
             end
         end
     end
-    for _, s in ipairs(workspace:GetDescendants()) do
-        if s:IsA("LocalScript") and (s.Name:lower():find("oxygen") or s.Name:lower():find("drown")) then
-            s.Disabled = true
-        end
-    end
-end
 
-local function setOxygenCheat(state)
-    oxygenCheatEnabled = state
-    if state then
-        applyOxygenCheat()
-    else
-        workspace:SetAttribute("IgnoreOxygen", false)
-    end
-end
-
-MiscTab:AddButton({
-    Name = "Toggle Infinite Oxygen & Bypass",
-    Callback = function()
-        setOxygenCheat(not oxygenCheatEnabled)
-    end
-})
-
-game.Players.LocalPlayer.CharacterAdded:Connect(function()
-    if oxygenCheatEnabled then
-        applyOxygenCheat()
-    end
-end)
-
-    local fullbrightEnabled = false
-    local function setFullbright(state)
-        local Lighting = game:GetService("Lighting")
+    local function setOxygenCheat(state)
+        oxygenCheatEnabled = state
         if state then
-            Lighting.Brightness = 5
-            Lighting.Ambient = Color3.new(1, 1, 1)
-            Lighting.FogEnd = 100000
-            Lighting.FogStart = 0
-            Lighting.FogColor = Color3.new(1, 1, 1)
+            applyOxygenCheat()
         else
-            Lighting.Brightness = 1
-            Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
-            Lighting.FogEnd = 1000
-            Lighting.FogStart = 0
-            Lighting.FogColor = Color3.new(0.5, 0.5, 0.5)
+            workspace:SetAttribute("IgnoreOxygen", false)
         end
     end
 
     MiscTab:AddButton({
-        Name = "Toggle Fullbright / No Fog",
+        Name = "Toggle Infinite Oxygen & Bypass",
         Callback = function()
-            fullbrightEnabled = not fullbrightEnabled
-            setFullbright(fullbrightEnabled)
+            setOxygenCheat(not oxygenCheatEnabled)
         end
     })
 
     game.Players.LocalPlayer.CharacterAdded:Connect(function()
-        if fullbrightEnabled then
-            setFullbright(true)
+        if oxygenCheatEnabled then
+            applyOxygenCheat()
         end
     end)
 
-OrionLib:Init()
-
-spawn(function()
-    task.wait(1)
-    local gui = game.CoreGui:FindFirstChild("Orion")
-    if gui then
-        local main = gui:FindFirstChildWhichIsA("Frame", true)
-        if main then
-            main.Active = true
-            main.Draggable = true
+        local fullbrightEnabled = false
+        local function setFullbright(state)
+            local Lighting = game:GetService("Lighting")
+            if state then
+                Lighting.Brightness = 5
+                Lighting.Ambient = Color3.new(1, 1, 1)
+                Lighting.FogEnd = 100000
+                Lighting.FogStart = 0
+                Lighting.FogColor = Color3.new(1, 1, 1)
+            else
+                Lighting.Brightness = 1
+                Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
+                Lighting.FogEnd = 1000
+                Lighting.FogStart = 0
+                Lighting.FogColor = Color3.new(0.5, 0.5, 0.5)
+            end
         end
-    end
-end)
+
+        MiscTab:AddButton({
+            Name = "Toggle Fullbright / No Fog",
+            Callback = function()
+                fullbrightEnabled = not fullbrightEnabled
+                setFullbright(fullbrightEnabled)
+            end
+        })
+
+        game.Players.LocalPlayer.CharacterAdded:Connect(function()
+            if fullbrightEnabled then
+                setFullbright(true)
+            end
+        end)
+
+    OrionLib:Init()
+
+    spawn(function()
+        task.wait(1)
+        local gui = game.CoreGui:FindFirstChild("Orion")
+        if gui then
+            local main = gui:FindFirstChildWhichIsA("Frame", true)
+            if main then
+                main.Active = true
+                main.Draggable = true
+            end
+        end
+    end)
