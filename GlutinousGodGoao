@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
 
 local Window = OrionLib:MakeWindow({
-    Name = "Juanny Jesus",
+    Name = "1% tryhard rod is insane @eagleshitter!!!!",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "JuannyJesusConfig"
@@ -137,3 +137,4 @@ spawn(function()
         end
     end
 end)
+
