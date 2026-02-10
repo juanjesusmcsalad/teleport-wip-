@@ -124,6 +124,65 @@ MiscTab:AddButton({
     end
 })
 
+local oxygenCheatEnabled = false
+local oxygenCheatLoop
+local function setOxygenCheat(state)
+    oxygenCheatEnabled = state
+    workspace:SetAttribute("IgnoreOxygen", state)
+    if state then
+        if oxygenCheatLoop then oxygenCheatLoop:Disconnect() end
+        oxygenCheatLoop = game:GetService("RunService").RenderStepped:Connect(function()
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            if character then
+                -- Set all relevant attributes
+                character:SetAttribute("OxygenUnits", 2000)
+                character:SetAttribute("Refill", true)
+                character:SetAttribute("DefOxygen1", true)
+                character:SetAttribute("DefOxygen2", true)
+                character:SetAttribute("DefOxygen3", true)
+                character:SetAttribute("DefOxygen4", true)
+                -- Try to set humanoid values
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    if humanoid:FindFirstChild("Oxygen") then
+                        humanoid.Oxygen.Value = 100
+                    end
+                    if humanoid:GetAttribute("Oxygen") then
+                        humanoid:SetAttribute("Oxygen", 100)
+                    end
+                end
+                -- Try disabling oxygen scripts
+                for _, s in ipairs(character:GetDescendants()) do
+                    if s:IsA("LocalScript") and (s.Name:lower():find("oxygen") or s.Name:lower():find("drown")) then
+                        s.Disabled = true
+                    end
+                end
+                for _, s in ipairs(workspace:GetDescendants()) do
+                    if s:IsA("LocalScript") and (s.Name:lower():find("oxygen") or s.Name:lower():find("drown")) then
+                        s.Disabled = true
+                    end
+                end
+            end
+        end)
+    else
+        if oxygenCheatLoop then oxygenCheatLoop:Disconnect() end
+    end
+end
+
+MiscTab:AddButton({
+    Name = "Toggle Infinite Oxygen & Bypass",
+    Callback = function()
+        setOxygenCheat(not oxygenCheatEnabled)
+    end
+})
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if oxygenCheatEnabled then
+        setOxygenCheat(true)
+    end
+end)
+
     local fullbrightEnabled = false
     local function setFullbright(state)
         local Lighting = game:GetService("Lighting")
