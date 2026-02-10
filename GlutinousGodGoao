@@ -40,3 +40,16 @@ Tab:AddButton({
 })
 
 OrionLib:Init()
+
+-- Attempt to make Orion window draggable
+spawn(function()
+    task.wait(1) -- Wait for Orion to load
+    local gui = game.CoreGui:FindFirstChild("Orion")
+    if gui then
+        local main = gui:FindFirstChildWhichIsA("Frame", true)
+        if main then
+            main.Active = true
+            main.Draggable = true
+        end
+    end
+end)
