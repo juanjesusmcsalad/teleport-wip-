@@ -91,7 +91,7 @@ end
 for _, parent in ipairs({ game:GetService("CoreGui"), PlayerGui }) do
     if parent then
         for _, ch in ipairs(parent:GetChildren()) do
-            if ch.Name == "Aether" or ch.Name == "Aether Studios" or ch:GetAttribute("AetherUI") or ch.Name == "PeelThePotato_UI" then
+            if ch.Name == "Aether" or ch.Name == "Aether Studios" or ch:GetAttribute("AetherUI") or ch.Name == "PeelThePotato_UI" or ch.Name == "Aether_MobileToggle" then
                 pcall(function() ch:Destroy() end)
             end
         end
@@ -7489,10 +7489,6 @@ local function saveGameConfig()
         local filePath = getGameConfigPath()
         
         local dataToSave = {
-            GameId = game.GameId,
-            PlaceId = game.PlaceId,
-            GameName = "PeelThePotato",
-            Version = "1.0",
             Settings = {},
             Elements = {}
         }
@@ -10255,79 +10251,6 @@ Window:Notify({
     Desc = "Automation Suite loaded! Press LeftControl to toggle.",
     Time = 5
 })
-
--- Mobile Support: Sleek, draggable floating toggle button for touch users
-if UserInputService.TouchEnabled then
-    pcall(function()
-        local parentGui = (typeof(gethui) == "function" and gethui()) or game:GetService("CoreGui")
-        local old = parentGui:FindFirstChild("Aether_MobileToggle") or (LocalPlayer:FindFirstChild("PlayerGui") and LocalPlayer.PlayerGui:FindFirstChild("Aether_MobileToggle"))
-        if old then pcall(function() old:Destroy() end) end
-        
-        local mobileGui = Instance.new("ScreenGui")
-        mobileGui.Name = "Aether_MobileToggle"
-        mobileGui.ResetOnSpawn = false
-        
-        local okP = pcall(function() mobileGui.Parent = parentGui end)
-        if not okP or not mobileGui.Parent then
-            mobileGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-        end
-        
-        local toggleBtn = Instance.new("ImageButton")
-        toggleBtn.Name = "ToggleBtn"
-        toggleBtn.Size = UDim2.new(0, 48, 0, 48)
-        toggleBtn.Position = UDim2.new(0.02, 0, 0.42, 0)
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(24, 22, 28)
-        toggleBtn.Image = "rbxassetid://10723415903"
-        toggleBtn.ImageColor3 = Color3.fromRGB(255, 115, 20)
-        toggleBtn.Parent = mobileGui
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 14)
-        corner.Parent = toggleBtn
-        
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(255, 115, 20)
-        stroke.Thickness = 1.6
-        stroke.Parent = toggleBtn
-        
-        local dragging = false
-        local dragStart, startPos
-        
-        toggleBtn.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-                dragging = true
-                dragStart = input.Position
-                startPos = toggleBtn.Position
-            end
-        end)
-        
-        toggleBtn.InputChanged:Connect(function(input)
-            if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-                local delta = input.Position - dragStart
-                toggleBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            end
-        end)
-        
-        local function endDrag(input)
-            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-                dragging = false
-            end
-        end
-        toggleBtn.InputEnded:Connect(endDrag)
-        
-        toggleBtn.Activated:Connect(function()
-            if Window and Window.Toggle then
-                Window:Toggle()
-            end
-        end)
-        
-        table.insert(Connections, {
-            Disconnect = function()
-                pcall(function() mobileGui:Destroy() end)
-            end
-        })
-    end)
-end
 
 -- Auto-Load Game Profile from Aether/Configs/AutoPotato.json on startup
 task.defer(function()
